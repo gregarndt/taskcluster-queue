@@ -481,8 +481,6 @@ suite('Post artifacts', function() {
 
     var artifacts = await helper.queue.listArtifacts(taskId, 0);
 
-    await helper.queue.reportCompleted(taskId, 0);
-
     var savedExpiration = new Date(artifacts.artifacts[0].expires).getTime();
     var originalExpiration = new Date(expirationIn1Day).getTime();
 
@@ -514,11 +512,9 @@ suite('Post artifacts', function() {
       expires:      taskcluster.fromNowJSON('1 day'),
       contentType:  'text/plain'
     }).then(async () => {
-      await helper.queue.reportCompleted(taskId, 0);
       assume().fail("Expected request to be unsuccessful");
     }, async (err) => {
       debug("Got error: %s, as JSON %j", err, err);
-      await helper.queue.reportCompleted(taskId, 0);
       assume(err.message).includes('Artifact already exists');
       assume(err.body.error).contains('originalArtifact', 'newArtifact');
     });
